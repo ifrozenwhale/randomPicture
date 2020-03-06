@@ -207,7 +207,7 @@ def get_size(path):
     return [size[0] / zoom, size[1] / zoom]
 if __name__ == '__main__':
     # 图片路径
-    path = 'img/xiezi.jpg'
+    path = 'img/tree.jpg'
     # 绘制边界
     plot_border(path)
     # 图片的长宽比
