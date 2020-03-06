@@ -8,6 +8,13 @@ from matplotlib.path import Path
 import cv2
 import numpy as np
 
+
+def randomcolor():
+    colorArr = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+    color = ""
+    for i in range(6):
+        color += colorArr[random.randint(0,14)]
+    return "#"+color
 def voronoi_finite_polygons_2d(vor, radius=None):
     """
     参考 Stack Overflow上https://stackoverflow.com/questions/20515554/colorize-voronoi-diagram
@@ -214,7 +221,6 @@ def get_border_list(path):
 
     return data
 
-
 def get_border_array(path='img/hua.jpg',type=2):
     """
     得到边界的 array
@@ -227,11 +233,8 @@ def get_border_array(path='img/hua.jpg',type=2):
     length = 0
     for i in range(len(arr)):
         length += len(arr[i])
-        print(len(arr[i]))
-    print(length)
     x = np.zeros(length)
     y = np.zeros(length)
-    arr = get_border(path)
     cnt = 0
     for i in range(len(arr)):
         for j in range(len(arr[i])):
@@ -239,8 +242,10 @@ def get_border_array(path='img/hua.jpg',type=2):
             y[cnt] = arr[i][j][0][1]
             cnt += 1
     # vstack就是垂直叠加组合形成一个新的数组，T是转置
+
     xycrop = np.vstack((x, y)).T
     return xycrop
+
 
 
 def get_border(path='img/hua.jpg',type=2):
@@ -301,14 +306,12 @@ def get_size(path):
 if __name__ == '__main__':
     # 图片路径
     path = 'img/xiezi.jpg'
-    # 绘制边界
-    plot_border(path)
     # 图片的长宽比
     size = get_size(path)
     # 得到边界
-    border = get_border_array(path,2)
+    border = get_border_array(path,1)
     # 得到随机数
-    data = get_random_data(border,4000)
+    data = get_random_data(border,2000)
     # 绘制Voronoi图
-    calVoronoi(data, size[0], size[1], name='运动鞋',color='#2F4F4F',linewidth=0.4)
+    calVoronoi(data, size[0], size[1], name='运动鞋2',color='#2F4F4F',linewidth=0.4)
 

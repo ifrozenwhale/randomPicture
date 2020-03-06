@@ -9,7 +9,12 @@ import cv2
 import numpy as np
 
 
-
+def randomcolor():
+    colorArr = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+    color = ""
+    for i in range(6):
+        color += colorArr[random.randint(0,14)]
+    return "#"+color
 def get_random_data(border,number=500,xd=5,yd=5):
     """
     得到有边界限制的随机数据点集
@@ -20,7 +25,6 @@ def get_random_data(border,number=500,xd=5,yd=5):
     :param yd: 图像的宽度指数（一般1-10）
     :return: 生成的随机点的坐标
     """
-
     # 得到 path 数据
     pth = Path(border, closed=False)
     plt.figure(figsize=(xd, yd))
@@ -87,13 +91,14 @@ def calVoronoi(pos,xd=10,yd=5,type=2,name='voronoi',color='#008B8B',linewidth=1,
     plt.rcParams['axes.unicode_minus'] = False
     # 得到坐标轴范围并进行设置
     axis_border = get_axis_border(pos)
-    plt.axis(axis_border)
+
     # 设置图片尺寸（长宽比）
     fig, ax = plt.subplots(figsize=(xd,yd))
     # Voronoi图绘制
     fig = voronoi_plot_2d(vor, ax, show_vertices=False, line_colors=color,
                           line_width=linewidth, line_alpha=0.8, point_size=0)
     # y轴翻转，以符合原始图像
+    plt.axis(axis_border)
     ax.invert_yaxis()
     # 不显示坐标轴
     plt.axis('off')
@@ -134,11 +139,8 @@ def get_border_array(path='img/hua.jpg',type=2):
     length = 0
     for i in range(len(arr)):
         length += len(arr[i])
-        print(len(arr[i]))
-    print(length)
     x = np.zeros(length)
     y = np.zeros(length)
-    arr = get_border(path)
     cnt = 0
     for i in range(len(arr)):
         for j in range(len(arr[i])):
@@ -146,6 +148,7 @@ def get_border_array(path='img/hua.jpg',type=2):
             y[cnt] = arr[i][j][0][1]
             cnt += 1
     # vstack就是垂直叠加组合形成一个新的数组，T是转置
+
     xycrop = np.vstack((x, y)).T
     return xycrop
 
@@ -160,6 +163,7 @@ def get_border(path='img/hua.jpg',type=2):
     img = cv2.imread(path)  # a black objects on white image is better
     thresh = cv2.Canny(img, 128, 256)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # print(contours)
     img = np.zeros(img.shape, dtype=np.uint8)
     cv2.drawContours(img, contours, -1, (255, 0, 0), 2)  # blue
     min_side_len = img.shape[0] / 32  # 多边形边长的最小值 the minimum side length of polygon
@@ -170,30 +174,11 @@ def get_border(path='img/hua.jpg',type=2):
     approxs = [approx for approx in approxs if cv2.arcLength(approx, True) > min_poly_len]  # 筛选出周长大于 min_poly_len 的多边形
     approxs = [approx for approx in approxs if len(approx) > min_side_num]  # 筛选出边长数大于 min_side_num 的多边形
     approxs = [approx for approx in approxs if cv2.contourArea(approx) > min_area]  # 筛选出面积大于 min_area_num 的多边形
-
     if type == 1:
         return contours
     else:
         return approxs
 
-
-def plot_border(path='img/whale2.jpg'):
-    """
-    绘制边界图
-    :param path:
-    :return:
-    """
-    data = get_border_list(path)
-    # print(data)
-    x = []
-    y = []
-    for i in data:
-        x.append(i[0])
-        y.append(i[1])
-    plt.scatter(x, y)
-    ax = plt.gca()
-    ax = ax.invert_yaxis()
-    plt.show()
 
 def get_size(path):
     """
@@ -204,17 +189,16 @@ def get_size(path):
     img = Image.open(path)
     size = img.size
     zoom = size[0] / 5
-    return [size[0] / zoom, size[1] / zoom]
+    return [size[0] / zoom /1.2, size[1] / zoom]
 if __name__ == '__main__':
     # 图片路径
-    path = 'img/tree.jpg'
-    # 绘制边界
-    plot_border(path)
+    path = 'img/xiezi.jpg'
     # 图片的长宽比
     size = get_size(path)
     # 得到边界
-    border = get_border_array(path,2)
+    border = get_border_array(path,1)
     # 得到随机数
-    data = get_random_data(border,4000)
+
+    data = get_random_data(border, 4000)
     # 绘制Voronoi图
-    calVoronoi(data, size[0], size[1], name='运动鞋',color='#2F4F4F',linewidth=0.4)
+    calVoronoi(data, size[0], size[1], name='鞋子',color=randomcolor(),linewidth=0.4)
